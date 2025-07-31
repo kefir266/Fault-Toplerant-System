@@ -1,0 +1,23 @@
+{
+  "name": "fault-tolerant-system",
+  "version": "1.0.0",
+  "description": "Fault-Tolerant-System",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "private": true,
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2",
+    "pretty-quick": "^4.2.2",
+    "serverless": "^4.17.2",
+    "serverless-lift": "^1.31.0"
+  },
+  "overrides": {
+    "serverless-lift": {
+      "serverless": "$serverless"
+    }
+  }
+}
