@@ -22,7 +22,7 @@ module.exports.getById = async (event, context) => {
   if (!answer.Item) {
     return response(
       {
-        message: 'Answer not found',
+        message: 'IAnswer not found',
       },
       404,
     );
@@ -58,7 +58,7 @@ module.exports.postAnswer = async (event, context) => {
   });
 
   return response({
-    message: 'Answer saved successfully',
+    message: 'IAnswer saved successfully',
     id: SQSRes.MessageId,
   });
 };
