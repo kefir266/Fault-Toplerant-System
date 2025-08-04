@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
+import { IAnswer } from './models/Answer';
+import { ITask } from './models/Task';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +19,8 @@ export class TaskApi {
       .pipe(map((response) => response.data || []));
   }
 
-  public postAnswer(answer: IAnswer): Observable<IAnswer> {
+  public postAnswer(answer: ITask): Observable<IAnswer> {
+    console.log('Posting answer:', answer);
     return this.httpClient.post<IAnswer>(`${this.apiUrl}/answers`, answer);
   }
 }

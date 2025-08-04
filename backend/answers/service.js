@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const { statuses } = require('../constants/statuses');
-const { getById, getAll, create, update } = require('../answers/answer.model');
+const { getById, getAll, create } = require('../answers/answer.model');
 
 const { QUEUE_URL } = process.env;
 

@@ -1,6 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { TaskApi } from '../task-api.service';
+import { Component, OnInit, Signal, signal } from '@angular/core';
+import { Store } from '@ngxs/store';
+import { IAnswer } from '../models/Answer';
 import { Answer } from '../answer/answer';
+import { GetTasks } from '../store/tasks/tasks.actions';
+import { TasksState } from '../store/tasks/tasks.state';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,12 +12,16 @@ import { Answer } from '../answer/answer';
   imports: [Answer],
 })
 export class Dashboard implements OnInit {
-  public answers = signal(<IAnswer[]>[]);
-  constructor(private quizApi: TaskApi) {}
+  public answers: Signal<any>;
+  constructor(private store: Store) {
+    this.answers = this.store.selectSignal(TasksState.getState);
+  }
 
   ngOnInit() {
-    this.quizApi.getAnswers().subscribe((answers) => {
-      this.answers.set(answers);
-    });
+    this.getAnswers();
+  }
+
+  getAnswers() {
+    this.store.dispatch(new GetTasks());
   }
 }

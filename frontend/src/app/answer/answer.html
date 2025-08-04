@@ -1,7 +1,5 @@
-<div>
-  <div>{{ answer.taskId }}</div>
-  <div>{{ answer.answer }}</div>
-  <div>{{ answer.answerStatus }}</div>
-  <div>{{ answer.attempt }}</div>
-  <div>{{ answer.errorMessage || "-" }}</div>
-</div>
+<td>{{ answer.taskId }}</td>
+<td>{{ answer.answer }}</td>
+<td><app-status [status]="answer.answerStatus"></app-status></td>
+<td>{{ answer.attempt }}</td>
+<td>{{ answer.errorMessage || "-" }}</td>

@@ -8,10 +8,11 @@ custom:
   customDomain:
     domainName: { self:custom.apiDomain }
     basePath: api
-    certificateName: '*.domain'
+    certificateArn:
+    hostedZoneId:
     createRoute53Record: true
     endpointType: REGIONAL
-    securityPolicy: tls_1_2
+    securityPolicy: tls_1_3
     apiType: http
     autoDomain: true
 
@@ -25,6 +26,8 @@ constructs:
     type: static-website
     bucketName: ${self:custom.bucketName}
     path: frontend/dist/frontend/browser
+    domain:
+    certificate:
 
 provider:
   name: aws
@@ -46,7 +49,17 @@ provider:
   environment:
     ANSWERS_TABLE: ${self:custom.answersTableName}
     QUEUE_URL: ${construct:jobs.queueUrl}
-
+    BACKEND_URL: ${self:custom.customDomain.domainName}/${self:custom.customDomain.basePath}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:4200
+      allowedMethods:
+        - GET
+        - POST
+      allowedHeaders:
+        - Content-Type
+        - Authorization
 functions:
   getAnswers:
     handler: backend/answers/service.getAnswers
@@ -80,16 +93,6 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
-#    customDomain:
-#      Type: AWS::Route53::RecordSet
-#      Properties:
-#        HostedZoneName: custom.domain.
-#        Name: fault-tolerant-system.custom.domain.
-#        Type: A
-#        AliasTarget:
-#          DNSName: fault-tolerant-system.custom.domain
-#          HostedZoneId:
-
 plugins:
   - serverless-lift
   - serverless-domain-manager

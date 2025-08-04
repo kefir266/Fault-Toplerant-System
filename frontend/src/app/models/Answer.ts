@@ -1,8 +1,8 @@
-interface IAnswer {
+export interface IAnswer {
   id: string;
   taskId: number;
   answer: string;
-  answerStatus: string;
+  answerStatus: IStatus;
   attempt: number;
   errorMessage: string;
   createdAt: Date;

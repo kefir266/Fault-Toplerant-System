@@ -1,8 +1,10 @@
 import { Component, Input } from '@angular/core';
+import { IAnswer } from '../models/Answer';
+import { Status } from './status/status';
 
 @Component({
-  selector: 'app-answer',
-  imports: [],
+  selector: 'tr[app-answer]',
+  imports: [Status],
   templateUrl: './answer.html',
   styleUrl: './answer.scss',
 })
