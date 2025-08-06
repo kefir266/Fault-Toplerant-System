@@ -1,19 +1,19 @@
-<section>
-  <form (ngSubmit)="submitAnswer()">
-    <header class="task-header">
-      <img src="task.png" alt="Task Icon" class="task-icon" />
-      <span class="splitter"> </span>
-      <span class="task-title">Read aloud | Q 1/3</span>
-    </header>
-    <div class="question">
-      <p>QUESTION:</p>
-      <div>
-        {{ task().question }}
+<section class="task-container">
+  <header class="task-header">
+    <img src="task.png" alt="Task Icon" class="task-icon" />
+    <span class="splitter"> </span>
+    <span class="task-title">Read aloud | Q 1/3</span>
+  </header>
+  <form class="form" (ngSubmit)="submitAnswer()">
+    <div class="task-content">
+      <div class="question">
+        <label>QUESTION:</label>
+        <div>
+          {{ task().question }}
+        </div>
       </div>
-    </div>
 
-    <div class="answer">
-      <p>
+      <div class="answer">
         <label for="text-answer">ANSWER:</label>
         <textarea
           id="text-answer"
@@ -21,9 +21,9 @@
           placeholder="Enter your answer"
           [(ngModel)]="task().answer"
         ></textarea>
-      </p>
+      </div>
     </div>
-    <footer>
+    <footer class="task-footer">
       <button class="submit-button" [disabled]="!task || !task().answer.length">
         Submit
       </button>
