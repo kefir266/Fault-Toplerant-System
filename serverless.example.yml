@@ -89,6 +89,40 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+
+stepFunctions:
+  stateMachines:
+    processWithBackoff:
+      events:
+        - http:
+            path: answers
+            method: POST
+      definition:
+        StartAt: ProcessTask
+        States:
+          ProcessTask:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [startProcessWithBackoff, Arn]
+            Retry:
+              - ErrorEquals:
+                  - States.ALL
+                IntervalSeconds: 2
+                BackoffRate: 2.0
+                MaxAttempts: 5
+            Next: WorkerTask
+          WorkerTask:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [worker, Arn]
+            Retry:
+              - ErrorEquals:
+                  - States.ALL
+                IntervalSeconds: 2
+                BackoffRate: 10.0
+                MaxAttempts: 5
+            End: true
+
 plugins:
   - serverless-lift
   - serverless-domain-manager

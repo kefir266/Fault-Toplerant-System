@@ -8,6 +8,10 @@ module.exports.processAnswer = async (event, context) => {
   await answerModel.addAttempt(body.id);
 
   try {
+    if (Math.round(Math.random())) {
+      // Simulate a failure
+      throw new Error('Simulated processing error');
+    }
     await answerModel.update(body.id, {
       answer: body.answer,
       answerStatus: statuses.processed,
