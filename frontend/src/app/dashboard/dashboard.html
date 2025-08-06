@@ -1,19 +1,27 @@
-<div class="dashboard">
-  <table class="table">
-    <thead class="table-header">
-      <th class="table-header-item">Task ID</th>
-      <th class="table-header-item">Answer</th>
-      <th class="table-header-item">Answer Status</th>
-      <th class="table-header-item">Attempt</th>
-      <th class="table-header-item">
-        <div>Error Message</div>
-        <div (click)="getAnswers()">🔄 refresh</div>
-      </th>
-    </thead>
-    <tbody class="table-body">
-      @for (answer of answers().items; track answer.id) {
-        <tr class="table-row" app-answer [answer]="answer"></tr>
-      }
-    </tbody>
-  </table>
-</div>
+@if (isLoading()) {
+  <div class="loading">
+    <div class="loading-spinner">
+      <img src="Loader.png" alt="loader" />
+    </div>
+  </div>
+} @else {
+  <div class="dashboard">
+    <table class="table">
+      <thead class="table-header">
+        <th class="table-header-item">Task ID</th>
+        <th class="table-header-item">Answer</th>
+        <th class="table-header-item">Answer Status</th>
+        <th class="table-header-item">Attempt</th>
+        <th class="table-header-item">
+          <div>Error Message</div>
+          <div (click)="getAnswers()">🔄 refresh</div>
+        </th>
+      </thead>
+      <tbody class="table-body">
+        @for (answer of answers().items; track answer.id) {
+          <tr class="table-row" app-answer [answer]="answer"></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

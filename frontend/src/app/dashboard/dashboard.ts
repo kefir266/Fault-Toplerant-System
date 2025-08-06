@@ -13,8 +13,11 @@ import { TasksState } from '../store/tasks/tasks.state';
 })
 export class Dashboard implements OnInit {
   public answers: Signal<any>;
+  public isLoading: Signal<boolean>;
   constructor(private store: Store) {
     this.answers = this.store.selectSignal(TasksState.getState);
+    this.isLoading = this.store.selectSignal(TasksState.isLoading);
+    console.log(this.isLoading());
   }
 
   ngOnInit() {

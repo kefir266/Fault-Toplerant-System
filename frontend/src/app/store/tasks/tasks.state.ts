@@ -10,6 +10,7 @@ export interface TasksStateModel {
   items: IAnswer[];
   tasks: ITask[];
   currentTaskId: number;
+  isLoading: boolean;
 }
 
 @State<TasksStateModel>({
@@ -18,6 +19,7 @@ export interface TasksStateModel {
     items: [],
     tasks: tasks,
     currentTaskId: 1,
+    isLoading: false,
   },
 })
 @Injectable()
@@ -35,19 +37,37 @@ export class TasksState {
     );
   }
 
+  @Selector()
+  static isLoading(state: TasksStateModel) {
+    return state.isLoading;
+  }
+
   constructor(private taskApi: TaskApi) {}
 
   @Action(AddTask)
   add(ctx: StateContext<TasksStateModel>, { payload }: AddTask) {
-    this.taskApi.postAnswer(payload).subscribe();
+    const stateModel = ctx.getState();
+    stateModel.isLoading = true;
+    ctx.setState(stateModel);
+    this.taskApi.postAnswer(payload).subscribe(() => {
+      stateModel.isLoading = false;
+    });
   }
 
   @Action(GetTasks)
   getTasks(ctx: StateContext<TasksStateModel>) {
+    console.log('GetTasks action called');
+    const stateModel = ctx.getState();
+    ctx.setState({
+      ...stateModel,
+      isLoading: true,
+    });
     return this.taskApi.getAnswers().subscribe((tasks) => {
-      const stateModel = ctx.getState();
-      stateModel.items = tasks;
-      ctx.setState(stateModel);
+      ctx.setState({
+        ...stateModel,
+        items: tasks,
+        isLoading: false,
+      });
     });
   }
 

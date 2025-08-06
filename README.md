@@ -105,4 +105,3 @@ To implement backoff retry strategy, I used AWS Step Functions
 
 - in some reason serverless didn't create httpApi endpoint, only restApi.
 - design not fully implemented
-- loader not implemented
