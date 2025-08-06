@@ -17,12 +17,7 @@ custom:
     autoDomain: true
 
 constructs:
-  jobs:
-    type: queue
-    worker:
-      handler: backend/worker.processAnswer
-    maxRetries: 3
-  website:
+  static-website:
     type: static-website
     bucketName: ${self:custom.bucketName}
     path: frontend/dist/frontend/browser
@@ -48,8 +43,10 @@ provider:
             - Fn::GetAtt: [AnswersTable, Arn]
   environment:
     ANSWERS_TABLE: ${self:custom.answersTableName}
-    QUEUE_URL: ${construct:jobs.queueUrl}
-    BACKEND_URL: ${self:custom.customDomain.domainName}/${self:custom.customDomain.basePath}
+
+  logs:
+    httpApi: true
+
   httpApi:
     cors:
       allowedOrigins:
@@ -61,6 +58,9 @@ provider:
         - Content-Type
         - Authorization
 functions:
+  startProcessWithBackoff:
+    handler: backend/answers/service.postAnswer
+
   getAnswers:
     handler: backend/answers/service.getAnswers
     events:
@@ -73,12 +73,8 @@ functions:
       - httpApi:
           path: /answers/{id}
           method: get
-  postAnswer:
-    handler: backend/answers/service.postAnswer
-    events:
-      - httpApi:
-          path: /answers
-          method: post
+  worker:
+    handler: backend/worker.processAnswer
 
 resources:
   Resources:
@@ -96,3 +92,5 @@ resources:
 plugins:
   - serverless-lift
   - serverless-domain-manager
+  - serverless-scriptable-plugin
+  - serverless-step-functions

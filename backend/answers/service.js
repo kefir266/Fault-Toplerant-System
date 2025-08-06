@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const uuid = require('uuid');
 const { statuses } = require('../constants/statuses');
 const { getById, getAll, create } = require('../answers/answer.model');
 
@@ -34,33 +35,20 @@ module.exports.getById = async (event, context) => {
 };
 
 module.exports.postAnswer = async (event, context) => {
-  const body = JSON.parse(event.body);
-
-  const SQSRes = await sqs
-    .sendMessage({
-      QueueUrl: QUEUE_URL,
-      MessageBody: JSON.stringify(body),
-      MessageAttributes: {
-        AttributeName: {
-          StringValue: 'Attribute Value',
-          DataType: 'String',
-        },
-      },
-    })
-    .promise();
+  console.log('Received event:', JSON.stringify(event, null, 2));
+  const body = event;
+  const id = uuid.v4();
 
   await create({
-    id: SQSRes.MessageId,
+    id,
     answer: body.answer,
+    taskId: body.taskId,
     answerStatus: statuses.pending,
     attempt: 0,
     createdAt: new Date().toISOString(),
   });
 
-  return response({
-    message: 'IAnswer saved successfully',
-    id: SQSRes.MessageId,
-  });
+  return response({ ...body, id });
 };
 
 function response(data, statusCode = 200) {
