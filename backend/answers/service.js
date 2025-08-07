@@ -1,17 +1,12 @@
-const AWS = require('aws-sdk');
 const uuid = require('uuid');
 const { statuses } = require('../constants/statuses');
 const { getById, getAll, create } = require('../answers/answer.model');
-
-const { QUEUE_URL } = process.env;
-
-const sqs = new AWS.SQS();
 
 module.exports.getAnswers = async (event, context) => {
   const answers = await getAll();
 
   return response({
-    data: answers.Items,
+    data: answers,
   });
 };
 

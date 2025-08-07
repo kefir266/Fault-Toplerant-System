@@ -10,6 +10,7 @@ module.exports.processAnswer = async (event, context) => {
   try {
     if (Math.round(Math.random())) {
       // Simulate a failure
+      console.info('Simulating a processing error');
       throw new Error('Simulated processing error');
     }
     await answerModel.update(body.id, {
@@ -20,5 +21,6 @@ module.exports.processAnswer = async (event, context) => {
   } catch (error) {
     console.error(error);
     await answerModel.updateErrorMessage(body.id, error.message);
+    throw error;
   }
 };

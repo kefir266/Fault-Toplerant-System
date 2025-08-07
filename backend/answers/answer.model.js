@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-
+const { statuses } = require('../constants/statuses');
 const { ANSWERS_TABLE, QUEUE_URL } = process.env;
 
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
@@ -21,7 +21,10 @@ function getAll() {
       TableName: ANSWERS_TABLE,
       Limit: 100,
     })
-    .promise();
+    .promise()
+    .then((data) =>
+      data.Items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+    );
 }
 
 function create(item) {
@@ -58,14 +61,14 @@ function addAttempt(id) {
   return dynamoDbClient
     .update({
       TableName: ANSWERS_TABLE,
-      Key: {
-        id: id,
-      },
+      Key: { id },
       UpdateExpression:
-        'set attempt = if_not_exists(numberField, :start) + :inc',
+        'set attempt = if_not_exists(attempt, :start) + :inc, answerStatus = :answerStatus, errorMessage = :empty',
       ExpressionAttributeValues: {
-        ':inc': 1, // value to add
-        ':start': 0, // default if field does not exist
+        ':inc': 1,
+        ':start': 0,
+        ':answerStatus': statuses.pending,
+        ':empty': '',
       },
     })
     .promise();
@@ -78,9 +81,11 @@ function updateErrorMessage(id, errorMessage) {
       Key: {
         id: id,
       },
-      UpdateExpression: 'set errorMessage = :errorMessage',
+      UpdateExpression:
+        'set errorMessage = :errorMessage, answerStatus = :answerStatus',
       ExpressionAttributeValues: {
         ':errorMessage': errorMessage,
+        ':answerStatus': statuses.failed,
       },
     })
     .promise();
