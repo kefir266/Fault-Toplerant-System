@@ -23,7 +23,6 @@ export class Task {
       console.log(this.task());
       this.store.dispatch(new AddTask(this.task()));
       this.store.dispatch(new NextTask());
-      this.store.dispatch(new GetTasks());
     }
   }
 }

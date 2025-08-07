@@ -47,10 +47,9 @@ export class TasksState {
   @Action(AddTask)
   add(ctx: StateContext<TasksStateModel>, { payload }: AddTask) {
     const stateModel = ctx.getState();
-    stateModel.isLoading = true;
-    ctx.setState(stateModel);
+    ctx.patchState({ isLoading: true });
     this.taskApi.postAnswer(payload).subscribe(() => {
-      stateModel.isLoading = false;
+      ctx.dispatch(new GetTasks());
     });
   }
 
