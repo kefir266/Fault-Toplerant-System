@@ -21,6 +21,11 @@ export class TaskApi {
 
   public postAnswer(answer: ITask): Observable<IAnswer> {
     console.log('Posting answer:', answer);
-    return this.httpClient.post<IAnswer>(`${this.apiUrl}/answers`, answer);
+    // TODO: fix AWS API Gateway
+    // return this.httpClient.post<IAnswer>(`${this.apiUrl}/answers`, answer);
+    return this.httpClient.post<IAnswer>(
+      `https://wrtnlvbkz7.execute-api.eu-west-1.amazonaws.com/dev/answers`,
+      answer,
+    );
   }
 }

@@ -9,12 +9,16 @@
     <table class="table">
       <thead class="table-header">
         <th class="table-header-item">Task ID</th>
-        <th class="table-header-item">Answer</th>
+        <th class="table-header-item text">Answer</th>
         <th class="table-header-item">Answer Status</th>
         <th class="table-header-item">Attempt</th>
         <th class="table-header-item">
-          <div>Error Message</div>
-          <div (click)="getAnswers()">🔄 refresh</div>
+          <div class="error-column">
+            <span class="error-message">Error Message</span>
+            <span class="refresh" (click)="getAnswers()"
+              ><span class="icon">🔄</span> refresh</span
+            >
+          </div>
         </th>
       </thead>
       <tbody class="table-body">
