@@ -1,7 +1,7 @@
 import { Component, Signal } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { FormsModule } from '@angular/forms';
-import { AddTask, GetTasks, NextTask } from '../store/tasks/tasks.actions';
+import { AddTask, NextTask } from '../store/tasks/tasks.actions';
 import { ITask } from '../models/Task';
 import { TasksState } from '../store/tasks/tasks.state';
 
@@ -20,7 +20,6 @@ export class Task {
 
   submitAnswer() {
     if (this.task().answer.length > 0) {
-      console.log(this.task());
       this.store.dispatch(new AddTask(this.task()));
       this.store.dispatch(new NextTask());
     }

@@ -14,3 +14,8 @@ export class NextTask {
   static readonly type = '[Tasks] Next task';
   constructor() {}
 }
+
+export class UpdateTask {
+  static readonly type = '[Tasks] Update task';
+  constructor(readonly payload: ITask) {}
+}

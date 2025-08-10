@@ -26,9 +26,7 @@ async function disconnectionHandler(event) {
   return { statusCode: 200 };
 }
 
-function defaultHandler(event) {
-  console.dir(event);
-
+function defaultHandler() {
   return {
     statusCode: 200,
     body: 'Default handler response',

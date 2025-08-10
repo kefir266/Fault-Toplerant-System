@@ -1,9 +1,8 @@
 const AWS = require('aws-sdk');
 const { WEBSOCKET_CONNECTION_TABLE, WEBSOCKET_API_ENDPOINT } = process.env;
-console.log(WEBSOCKET_API_ENDPOINT);
 
-module.exports.handler = async (event, context) => {
-  console.log(event);
+module.exports.handler = async (event) => {
+  console.log('Received event:', JSON.stringify(event, null, 2));
 
   const db = new AWS.DynamoDB.DocumentClient();
   const connections = await db
@@ -14,9 +13,12 @@ module.exports.handler = async (event, context) => {
 
   const records = event.Records || [];
   for (const record of records) {
-    if (record.eventName === 'INSERT' || record.eventName === 'REMOVE') {
-      const sent = await broadcastToSSocket(record);
-      console.log(sent);
+    if (
+      record.eventName === 'INSERT' ||
+      record.eventName === 'REMOVE' ||
+      record.eventName === 'MODIFY'
+    ) {
+      await broadcastToSSocket(record);
     }
   }
 
@@ -30,8 +32,6 @@ module.exports.handler = async (event, context) => {
       apiVersion: '2018-11-29',
       endpoint: WEBSOCKET_API_ENDPOINT,
     });
-    console.dir(connections);
-    console.log(data);
 
     return Promise.allSettled(
       connections.Items.map((connection) => {

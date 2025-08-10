@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { State, Action, Selector, StateContext } from '@ngxs/store';
-import { AddTask, GetTasks, NextTask } from './tasks.actions';
+import { State, Action, Selector, StateContext, Store } from '@ngxs/store';
+import { AddTask, GetTasks, NextTask, UpdateTask } from './tasks.actions';
 import { TaskApi } from '../../task-api.service';
 import { tasks } from '../../mocks/tasks';
 import { IAnswer } from '../../models/Answer';
@@ -42,20 +42,26 @@ export class TasksState {
     return state.isLoading;
   }
 
-  constructor(private taskApi: TaskApi) {}
+  constructor(
+    private taskApi: TaskApi,
+    private store: Store,
+  ) {
+    this.taskApi.getMessages().subscribe((message) => {
+      if (message.eventName === 'MODIFY') {
+        this.store.dispatch(new UpdateTask(message.dynamodb.NewImage));
+      } else {
+        this.store.dispatch(new GetTasks());
+      }
+    });
+  }
 
   @Action(AddTask)
   add(ctx: StateContext<TasksStateModel>, { payload }: AddTask) {
-    const stateModel = ctx.getState();
-    ctx.patchState({ isLoading: true });
-    this.taskApi.postAnswer(payload).subscribe(() => {
-      ctx.dispatch(new GetTasks());
-    });
+    this.taskApi.postAnswer(payload).subscribe();
   }
 
   @Action(GetTasks)
   getTasks(ctx: StateContext<TasksStateModel>) {
-    console.log('GetTasks action called');
     const stateModel = ctx.getState();
     ctx.setState({
       ...stateModel,
@@ -72,14 +78,43 @@ export class TasksState {
 
   @Action(NextTask)
   nextTask(ctx: StateContext<TasksStateModel>) {
-    // just get next mocked task
     const stateModel = ctx.getState();
-    // to simplify, indexes equal taskId
     if (stateModel.currentTaskId < tasks.length) {
       ctx.setState({
         ...stateModel,
         currentTaskId: stateModel.currentTaskId + 1,
       });
     }
+  }
+
+  @Action(UpdateTask)
+  updateTask(
+    ctx: StateContext<TasksStateModel>,
+    { payload }: { payload: any },
+  ) {
+    const stateModel = ctx.getState();
+    const answer = this.imageToModel(payload);
+    const idx = stateModel.items.findIndex((a) => a.id === answer.id);
+    if (idx !== -1) {
+      const items = [...stateModel.items];
+      items[idx] = answer;
+      ctx.setState({
+        ...stateModel,
+        items,
+      });
+    }
+  }
+
+  private imageToModel(image: any): IAnswer {
+    return Object.keys(image).reduce((acc, key) => {
+      const type = Object.keys(image[key])[0];
+      if (type === 'NULL') return acc;
+
+      const value = image[key][type];
+      return {
+        ...acc,
+        [key]: value,
+      };
+    }, {}) as IAnswer;
   }
 }
