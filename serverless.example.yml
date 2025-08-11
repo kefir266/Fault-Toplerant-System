@@ -91,30 +91,30 @@ functions:
   worker:
     handler: backend/worker.processAnswer
 
-    connectionHandler:
-      handler: backend/socket.connectionHandler
-      events:
-        - websocket:
-            route: $connect
-    disconnectionHandler:
-      handler: backend/socket.disconnectionHandler
-      events:
-        - websocket:
-            route: $disconnect
-    defaultHandler:
-      handler: backend/socket.defaultHandler
-      events:
-        - websocket:
-            route: $default
-    dynamodbStreamHandler:
-      handler: backend/dynamodb-stream.handler
-      events:
-        - stream:
-            type: dynamodb
-            arn:
-              Fn::GetAtt: [AnswersTable, StreamArn]
-            batchSize: 1
-            startingPosition: LATEST
+  connectionHandler:
+    handler: backend/socket.connectionHandler
+    events:
+      - websocket:
+          route: $connect
+  disconnectionHandler:
+    handler: backend/socket.disconnectionHandler
+    events:
+      - websocket:
+          route: $disconnect
+  defaultHandler:
+    handler: backend/socket.defaultHandler
+    events:
+      - websocket:
+          route: $default
+  dynamodbStreamHandler:
+    handler: backend/dynamodb-stream.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt: [AnswersTable, StreamArn]
+          batchSize: 1
+          startingPosition: LATEST
 
 resources:
   Resources:
@@ -130,7 +130,7 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         StreamSpecification:
-          StreamViewType: NEW_IMAGE
+          StreamViewType: NEW_AND_OLD_IMAGES
 
     WebSocketConnectionTable:
       Type: AWS::DynamoDB::Table
